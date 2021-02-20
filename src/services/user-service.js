@@ -36,7 +36,7 @@ const add = async ({
   if (password.length < 6 || password.length > 30) {
     error = new Error('password is needs to be less 3 and graater than 30.')
   }
-  if (!validator.isURL(imageURL)) {
+  if (imageURL && !validator.isURL(imageURL)) {
     error = new Error('url image is wrong')
   }
   const userFound = users.find(user => user.email === email)
