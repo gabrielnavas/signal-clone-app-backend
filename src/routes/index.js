@@ -3,11 +3,17 @@ const userService = require('../services/user-service')
 
 
 routes.post('/register', async (req, res) => {
-  for (const param of ['name', 'email', 'user', 'password']) {
-    if (!param) {
+  const paramsNames = ['name', 'email', 'password']
+  for (const param of paramsNames) {
+    if (!req.body[param]) {
       return res.status(400).json({ error: `missing ${param} error` })
     }
   }
+  paramsNames.forEach(param => {
+    if (typeof req.body[param] === 'string') {
+      req.body[param] === String(req.body[param]).trim().toLocaleLowerCase()
+    }
+  })
   try {
     const { token, error } = await userService.add({
       name: req.body.name,
@@ -26,25 +32,30 @@ routes.post('/register', async (req, res) => {
   }
 })
 
-routes.post('/login', async (req,res) => {
-  for (const param of ['email', 'password']) {
-    if (!param) {
+routes.post('/login', async (req, res) => {
+  const paramsNames = ['email', 'password']
+  for (const param of paramsNames) {
+    if (!req.body[param]) {
       return res.status(400).json({ error: `missing ${param} error` })
     }
   }
-
+  paramsNames.forEach(param => {
+    if (typeof req.body[param] === 'string') {
+      req.body[param] === String(req.body[param]).trim().toLocaleLowerCase()
+    }
+  })
   try {
-    const respService = userService.login({
-      email: req.body.email, 
+    const respService = await userService.login({
+      email: req.body.email,
       password: req.body.password
     })
     if (respService.error) {
-      return res.status(400).json(respService.error.message)
+      return res.status(400).json({ error: respService.error.message })
     }
-    const {password, ...userLessPassword} = respService.user
+    const { password, ...userLessPassword } = respService.user
     const responseObj = {
       token: respService.token,
-      userLessPassword
+      user: userLessPassword
     }
     res.status(200).json(responseObj)
   }

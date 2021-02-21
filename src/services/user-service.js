@@ -65,20 +65,21 @@ const add = async ({
   }
 }
 
-const login = ({ email, password }) => {
+const login = async ({ email, password }) => {
   let error
   let token
   let user
   const userFound = users.find(user => user.email === email)
   if (!userFound) {
     error = new Error('user not found')
-  }
-
-  if (!error) {
-    const passwordEquals = checkPasswordHashed(password, userFound.password)
+  } else {
+    const passwordEquals = await checkPasswordHashed(password, userFound.password)
     if (!passwordEquals) {
       error = new Error('user not found')
     }
+  }
+
+  if (!error) {
     //security fails here , need before invalidate previous token and after generete a new
     token = makeToken(userFound.id)
     user = userFound
