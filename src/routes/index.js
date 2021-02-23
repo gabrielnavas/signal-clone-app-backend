@@ -1,6 +1,8 @@
 const routes = require('express').Router()
 const userService = require('../services/user-service')
-
+const authService = require('../services/auth-service')
+const chatService = require('../services/chat-service')
+const messageService = require('../services/message-service')
 
 routes.post('/register', async (req, res) => {
   const paramsNames = ['name', 'email', 'password']
@@ -31,7 +33,7 @@ routes.post('/register', async (req, res) => {
     res.status(500).json('server error')
   }
 })
-
+messageService
 routes.post('/login', async (req, res) => {
   const paramsNames = ['email', 'password']
   for (const param of paramsNames) {
@@ -61,8 +63,61 @@ routes.post('/login', async (req, res) => {
   }
   catch (error) {
     console.error(error)
-    res.status(500).json('server error')
+    res.status(500).json({ error: 'server error' })
   }
 })
+
+const checkAuth = (req, res, next) => {
+  try {
+    const bearer = req.headers['authorization']
+    const token = bearer.replace('Bearer ', '')
+    const userId = authService.verifyToken(token)
+    if (userId) {
+      req.userId = userId
+      return next()
+    }
+    return res.status(400).json('authentication failure')
+  }
+  catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'server error' })
+  }
+}
+
+routes.post('/chat', checkAuth, (req, res) => {
+  try {
+    const userId = req.userId
+    if (!req.body['nameChat']) {
+      return res.status(400).json({ error: 'missing nameChat error' })
+    }
+    const newChat = chatService.add({ idUserOwner: userId, nameChat: req.body['nameChat'] })
+    res.status(200).json({ body: newChat })
+  }
+  catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'server error' })
+  }
+})
+
+
+routes.post('/message', checkAuth, (req, res) => {
+  try {
+    const userId = req.userId
+    if (!req.body['idChat']) {
+      return res.status(400).json({ error: `missing idMessage error` })
+    }
+    const chats = messageService.add({
+      idChat: req.body['idChat'],
+      userId,
+      messageText: req.body['messageText']
+    })
+    res.status(200).json({ body: chats })
+  }
+  catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'server error' })
+  }
+})
+
 
 module.exports = routes

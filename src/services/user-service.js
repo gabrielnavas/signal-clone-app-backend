@@ -93,5 +93,5 @@ const login = async ({ email, password }) => {
 
 module.exports = {
   add,
-  login
+  login,
 }
