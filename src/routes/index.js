@@ -1,8 +1,8 @@
 const routes = require('express').Router()
-const userService = require('../services/user-service')
-const authService = require('../services/auth-service')
-const chatService = require('../services/chat-service')
-const messageService = require('../services/message-service')
+const userService = require('../services/http/user-service')
+const authService = require('../services/http/auth-service')
+const chatService = require('../services/http/chat-service')
+const messageService = require('../services/http/message-service')
 
 routes.post('/register', async (req, res) => {
   const paramsNames = ['name', 'email', 'password']

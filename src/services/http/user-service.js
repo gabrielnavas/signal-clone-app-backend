@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const validator = require('validator')
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt')
-const dotenv = require('../config/env')
+const dotenv = require('../../config/env')
 
 const users = []
 
