@@ -102,6 +102,18 @@ routes.post('/chat', checkAuth, (req, res) => {
   }
 })
 
+routes.get('/chat', checkAuth, (req, res) => {
+  try {
+    const chats = chatService.getAll()
+    res.status(200).json({ body: chats })
+  }
+  catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'server error' })
+  }
+})
+
+
 
 routes.post('/message', checkAuth, (req, res) => {
   try {
@@ -109,12 +121,12 @@ routes.post('/message', checkAuth, (req, res) => {
     if (!req.body['idChat']) {
       return res.status(400).json({ error: `missing idMessage error` })
     }
-    const chats = messageService.add({
+    const message = messageService.add({
       idChat: req.body['idChat'],
       userId,
       messageText: req.body['messageText']
     })
-    res.status(200).json({ body: chats })
+    res.status(200).json({ body: message })
   }
   catch (error) {
     console.error(error)
