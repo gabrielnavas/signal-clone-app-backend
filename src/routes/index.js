@@ -69,8 +69,11 @@ routes.post('/login', async (req, res) => {
 
 const checkAuth = (req, res, next) => {
   try {
+    if(!req.headers['authorization']) {
+      return res.status(400).json('authentication failure')
+    }
     const bearer = req.headers['authorization']
-    const token = bearer.replace('Bearer ', '')
+    const token = bearer.replace('Bearer ', '').split()[0]
     const userId = authService.verifyToken(token)
     if (userId) {
       req.userId = userId
