@@ -6,17 +6,12 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server, { cors: { origin: "*", } });
 
-const sendMessageSocket = require('../services/socket/send-message-service')
-
-io.on('connection', socket => {
-  sendMessageSocket(io, socket)
-})
-
-
+const setupRoutesSockets = require('../routes/socket')
 const setupMiddlewares = require('./middlewares')
-const setupRoutes = require('./routes')
+const setupRoutesHttp = require('./routes')
 
 setupMiddlewares(app)
-setupRoutes(app)
+setupRoutesHttp(app)
+setupRoutesSockets(io)
 
 module.exports = server
