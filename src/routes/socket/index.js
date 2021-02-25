@@ -1,10 +1,16 @@
-const sendMessageService = require('../../services/socket/send-message-service')
+const {
+  disconnectChat,
+  joinChat,
+  sendMessagesRequest,
+  sendMessagesSuccess,
+} = require('../../services/socket/chat')
 
 
 module.exports = io => {
   io.on('connection', socket => {
-    sendMessageService.request(io, socket)
-    sendMessageService.success(io, socket)
-    sendMessageService.failure(io, socket)
+    disconnectChat(io, socket)
+    joinChat(io, socket)
+    sendMessagesRequest(io, socket)
+    sendMessagesSuccess(io, socket)
   })
 }
